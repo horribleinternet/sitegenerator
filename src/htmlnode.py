@@ -1,0 +1,17 @@
+
+class HTMLNode:
+    def __init__(self, tag = None, value = None, children = None, props = None):
+        self.tag = tag
+        self.value = value
+        self.children = children
+        self.props = props
+
+    def to_html(self):
+        raise NotImplementedError("HTMLNode.to_html not implementd")
+
+    def props_to_html(self):
+        if len(props) == 0:
+            return ""
+        prop_list = list(map(lambda x: f"{x[0][1:-1]} = {x[1]}", self.props.items()))
+        return " ".join(prop_list)
+    
