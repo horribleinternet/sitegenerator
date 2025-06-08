@@ -10,7 +10,7 @@ class HTMLNode:
         raise NotImplementedError("HTMLNode.to_html not implementd")
 
     def props_to_html(self):
-        if len(props) == 0:
+        if len(self.props) == 0:
             return ""
         prop_list = list(map(lambda x: f"{x[0][1:-1]} = {x[1]}", self.props.items()))
         return " ".join(prop_list)
@@ -23,4 +23,4 @@ class HTMLNode:
 
 
     def __repl__(self):
-        tag = f"<{tag} {props_to_html}>{value} {children_to_html()} </{tag}>"
+        tag = f"<{tag} {self.props_to_html}>{self.value} {self.children_to_html()} </{tag}>"
