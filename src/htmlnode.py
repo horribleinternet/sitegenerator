@@ -6,13 +6,17 @@ class HTMLNode:
         self.children = children
         self.props = props
 
+    def __eq__(self, other):
+        return (self.tag == other.tag and self.value == other.value and
+                self.children == other.children and self.props == other.props)
+
     def to_html(self):
         raise NotImplementedError("HTMLNode.to_html not implementd")
 
     def props_to_html(self):
         if len(self.props) == 0:
             return ""
-        prop_list = list(map(lambda x: f"{x[0][1:-1]} = {x[1]}", self.props.items()))
+        prop_list = list(map(lambda x: f'{x[0]} = "{x[1]}"', self.props.items()))
         return " ".join(prop_list)
 
     def children_to_html(self):
