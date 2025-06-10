@@ -16,8 +16,8 @@ class HTMLNode:
     def props_to_html(self):
         if self.props == None or len(self.props) == 0:
             return ""
-        prop_list = list(map(lambda x: f'{x[0]} = "{x[1]}"', self.props.items()))
-        return " ".join(prop_list)
+        prop_list = list(map(lambda x: f'{x[0]}="{x[1]}"', self.props.items()))
+        return " " + " ".join(prop_list)
 
     def children_to_html(self):
         childrenstr = ""
