@@ -10,6 +10,4 @@ class LeafNode(HTMLNode):
         if self.tag == None:
             return self.value
         props_str = self.props_to_html()
-        if len(props_str) > 0:
-            props_str = " " + props_str
         return f"<{self.tag}{props_str}>{self.value}</{self.tag}>"
