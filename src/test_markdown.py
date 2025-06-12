@@ -33,6 +33,13 @@ class TestParentNode(unittest.TestCase):
                                  TextNode("other bold", TextType.BOLD_TEXT),
                                  TextNode(" text", TextType.NORMAL_TEXT)])
 
+    def test_code(self):
+        old_nodes = [TextNode("there is some\n```\ncode\n```\nhere", TextType.NORMAL_TEXT)]
+        nodes = split_nodes_delimiter(old_nodes, "```", TextType.CODE_TEXT)
+        self.assertEqual(nodes, [TextNode("there is some\n", TextType.NORMAL_TEXT),
+                                 TextNode("\ncode\n", TextType.CODE_TEXT),
+                                 TextNode("\nhere", TextType.NORMAL_TEXT)])
+
     def test_extract_markdown_images(self):
         matches = extract_markdown_images("This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) really")
         self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
