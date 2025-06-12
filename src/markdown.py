@@ -1,4 +1,5 @@
 from textnode import TextType, TextNode
+import re
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     delim_len = len(delimiter)
@@ -26,4 +27,42 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             else:
                 rc.append(TextNode(nodetext, TextType.NORMAL_TEXT))
     return rc
+
+def extract_markdown_images(text):
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+
+def extract_markdown_links(text):
+    return re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
+
+def split_nodes_complicated(old_nodes, splitter, img):
+    rc = []
+    for node in old_nodes:
+        if node.text_type != TextType.NORMAL_TEXT:
+            continue
+        comps = splitter(node.text)
+        if len(comps) == 0:
+            rc.append(node)
+            continue
+        marker = ""
+        texttype = TextType.LINK
+        if img:
+            marker = "!"
+            texttype = TextType.IMAGE
+        remaining = node.text
+        for comp in comps:
+            pattern = f"{marker}[{comp[0]}]({comp[1]})"
+            part = remaining.split(pattern, 1)
+            if len(part[0]) > 0:
+                rc.append(TextNode(part[0], TextType.NORMAL_TEXT))
+            rc.append(TextNode(comp[0], texttype, comp[1]))
+            remaining = remaining[len(part[0])+len(pattern):]
+        if len(remaining) > 0:
+            rc.append(TextNode(remaining, TextType.NORMAL_TEXT))
+    return rc
+
+def split_nodes_image(old_nodes):
+    return split_nodes_complicated(old_nodes, extract_markdown_images, True)
+
+def split_nodes_link(old_nodes):
+    return split_nodes_complicated(old_nodes, extract_markdown_links, False)
 
