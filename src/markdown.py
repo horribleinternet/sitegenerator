@@ -8,6 +8,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
     rc = []
     for node in old_nodes:
         if node.text_type != TextType.NORMAL_TEXT:
+            rc.append(node)
             continue
         inside_block = False
         nodetext = node.text
@@ -38,6 +39,7 @@ def split_nodes_complicated(old_nodes, splitter, img):
     rc = []
     for node in old_nodes:
         if node.text_type != TextType.NORMAL_TEXT:
+            rc.append(node)
             continue
         comps = splitter(node.text)
         if len(comps) == 0:
@@ -66,3 +68,10 @@ def split_nodes_image(old_nodes):
 def split_nodes_link(old_nodes):
     return split_nodes_complicated(old_nodes, extract_markdown_links, False)
 
+def text_to_textnodes(text):
+    nodes = split_nodes_delimiter([TextNode(text, TextType.NORMAL_TEXT)], "**", TextType.BOLD_TEXT)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC_TEXT)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE_TEXT)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
