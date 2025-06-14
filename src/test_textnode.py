@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType, BlockType, text_node_to_html_node, block_to_block_type, get_leading_hashes, is_heading
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -71,6 +71,24 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "a")
         self.assertEqual(html_node.value, "This is a link")
         self.assertEqual(html_node.props["href"], "http://4chan.org/")
+
+    def test_heading(self):
+        heading = "## what\n## why\n"
+        self.assertEqual(get_leading_hashes(heading.splitlines()), 2)
+        self.assertEqual(is_heading(heading), True)
+        self.assertEqual(block_to_block_type(heading), BlockType.HEADING)
+        heading = "## what\n### why\n## where"
+        self.assertEqual(get_leading_hashes(heading.splitlines()), 0)
+        self.assertEqual(is_heading(heading), False)
+        self.assertEqual(block_to_block_type(heading), BlockType.PARAGRAPH)
+        heading = "##what\n## why\n"
+        self.assertEqual(get_leading_hashes(heading.splitlines()), 0)
+        self.assertEqual(is_heading(heading), False)
+        self.assertEqual(block_to_block_type(heading), BlockType.PARAGRAPH)
+        heading = "#### what\n#### why\n#### where\n#### how\n"
+        self.assertEqual(get_leading_hashes(heading.splitlines()), 4)
+        self.assertEqual(is_heading(heading), True)
+        self.assertEqual(block_to_block_type(heading), BlockType.HEADING)
 
 if __name__ == "__main__":
     unittest.main()
