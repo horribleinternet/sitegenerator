@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, BlockType, text_node_to_html_node, block_to_block_type, get_leading_hashes, is_heading, is_code_block
+from textnode import TextNode, TextType, BlockType, text_node_to_html_node, block_to_block_type, get_leading_hashes, is_heading, is_code_block, is_quote, is_ordered_list, is_unordered_list
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -97,6 +97,44 @@ class TestTextNode(unittest.TestCase):
         code_block = "```\nif code then whatever\nmore codecode\nend o code\n```"
         self.assertEqual(is_code_block(code_block), False)
         self.assertEqual(block_to_block_type(code_block), BlockType.PARAGRAPH)
+
+    def test_quote(self):
+        quote_block=">racist stuff\n>misogynistic stuf\n>retarded stuff\n"
+        self.assertEqual(is_quote(quote_block), True)
+        self.assertEqual(block_to_block_type(quote_block), BlockType.QUOTE)
+        quote_block=">racist stuff\nmisogynistic stuf\n>retarded stuff\n"
+        self.assertEqual(is_quote(quote_block), False)
+        self.assertEqual(block_to_block_type(quote_block), BlockType.PARAGRAPH)
+
+    def test_unordered_list(self):
+        unordered_list = "- some BS\n- some other BS\n- even more BS\n"
+        self.assertEqual(is_unordered_list(unordered_list), True)
+        self.assertEqual(block_to_block_type(unordered_list), BlockType.UNORDERED_LIST)
+        unordered_list = "-some BS\n- some other BS\n- even more BS\n"
+        self.assertEqual(is_unordered_list(unordered_list), False)
+        self.assertEqual(block_to_block_type(unordered_list), BlockType.PARAGRAPH)
+        unordered_list = "some BS\nsome other BS\neven more BS\n"
+        self.assertEqual(is_unordered_list(unordered_list), False)
+        self.assertEqual(block_to_block_type(unordered_list), BlockType.PARAGRAPH)
+
+    def test_ordered_list(self):
+        ordered_list = "1- some BS\n2- some other BS\n3- even more BS\n"
+        self.assertEqual(is_ordered_list(ordered_list), True)
+        self.assertEqual(block_to_block_type(ordered_list), BlockType.ORDERED_LIST)
+        ordered_list = "2-some BS\n1- some other BS\n3- even more BS\n"
+        self.assertEqual(is_ordered_list(ordered_list), False)
+        self.assertEqual(block_to_block_type(ordered_list), BlockType.PARAGRAPH)
+        ordered_list = "some BS\nsome other BS\neven more BS\n"
+        self.assertEqual(is_ordered_list(ordered_list), False)
+        self.assertEqual(block_to_block_type(ordered_list), BlockType.PARAGRAPH)
+
+    def test_paragraph(self):
+        paragraph = "oh noes\nteh bus\n"
+        self.assertEqual(block_to_block_type(paragraph), BlockType.PARAGRAPH)
+        code_block = "```\nif code then whatever\nmore codecode\nend o code\n````"
+        self.assertNotEqual(block_to_block_type(code_block), BlockType.PARAGRAPH)
+        heading = "#### what\n#### why\n"
+        self.assertNotEqual(block_to_block_type(heading), BlockType.PARAGRAPH)
 
 if __name__ == "__main__":
     unittest.main()

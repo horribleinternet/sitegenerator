@@ -11,10 +11,10 @@ class TextType(Enum):
 
 class BlockType(Enum):
     HEADING = "headng"
-    CODE = "oode blockc"
+    CODE = "code block"
     QUOTE = "quote"
     UNORDERED_LIST = "uordered list"
-    ORDERED_lIST = "ordered list"
+    ORDERED_LIST = "ordered list"
     PARAGRAPH = "paragraph"
 
 
@@ -106,10 +106,10 @@ def block_to_block_type(block):
     elif is_code_block(block):
         return BlockType.CODE
     elif is_quote(block):
-        return BlockType.CODE
+        return BlockType.QUOTE
     elif is_unordered_list(block):
         return BlockType.UNORDERED_LIST
     elif is_ordered_list(block):
-        return BlockType.ORDERED_lIST
+        return BlockType.ORDERED_LIST
     else:
         return BlockType.PARAGRAPH
