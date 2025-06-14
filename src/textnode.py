@@ -76,7 +76,7 @@ def is_heading(block):
     return get_leading_hashes(lines) > 0
 
 def is_code_block(block):
-    return block.startswith("~~~") and block.startswith("~~~", len(block)-4)
+    return block.startswith("```") and block.startswith("```", len(block)-4)
 
 def block_startswith(block, start):
     lines = block.splitlines()

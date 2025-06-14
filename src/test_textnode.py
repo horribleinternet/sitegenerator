@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, BlockType, text_node_to_html_node, block_to_block_type, get_leading_hashes, is_heading
+from textnode import TextNode, TextType, BlockType, text_node_to_html_node, block_to_block_type, get_leading_hashes, is_heading, is_code_block
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -89,6 +89,14 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(get_leading_hashes(heading.splitlines()), 4)
         self.assertEqual(is_heading(heading), True)
         self.assertEqual(block_to_block_type(heading), BlockType.HEADING)
+
+    def test_code_block(self):
+        code_block = "```\nif code then whatever\nmore codecode\nend o code\n````"
+        self.assertEqual(is_code_block(code_block), True)
+        self.assertEqual(block_to_block_type(code_block), BlockType.CODE)
+        code_block = "```\nif code then whatever\nmore codecode\nend o code\n```"
+        self.assertEqual(is_code_block(code_block), False)
+        self.assertEqual(block_to_block_type(code_block), BlockType.PARAGRAPH)
 
 if __name__ == "__main__":
     unittest.main()
