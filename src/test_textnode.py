@@ -1,7 +1,7 @@
 import unittest
 
-from textnode import TextNode, TextType, BlockType, text_node_to_html_node, block_to_block_type, get_leading_hashes, is_heading, is_code_block, is_quote, is_ordered_list, is_unordered_list
-
+from textnode import TextNode, TextType, BlockType
+from nodeconvert import text_node_to_html_node, block_to_block_type, get_leading_hashes, is_heading, is_code_block, is_quote, is_ordered_list, is_unordered_list
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
         node = TextNode("This is a text node", TextType.BOLD_TEXT)
