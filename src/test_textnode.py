@@ -95,7 +95,7 @@ class TestTextNode(unittest.TestCase):
         code_block = "```\nif code then whatever\nmore codecode\nend o code\n````"
         self.assertEqual(is_code_block(code_block), True)
         self.assertEqual(block_to_block_type(code_block), BlockType.CODE)
-        code_block = "```\nif code then whatever\nmore codecode\nend o code\n```"
+        code_block = "``\nif code then whatever\nmore codecode\nend o code\n```"
         self.assertEqual(is_code_block(code_block), False)
         self.assertEqual(block_to_block_type(code_block), BlockType.PARAGRAPH)
 
