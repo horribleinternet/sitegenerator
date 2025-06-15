@@ -22,7 +22,7 @@ def text_node_to_html_node(text_node):
 
 def text_nodes_to_html_nodes(text_nodes):
     rc = []
-    for text_node in text_node:
+    for text_node in text_nodes:
         rc.append(text_node_to_html_node(text_node))
     return rc
 
@@ -53,7 +53,10 @@ def is_heading(block):
     return get_leading_hashes(lines) > 0
 
 def is_code_block(block):
-    return block.startswith("```") and block.startswith("```", len(block)-4)
+    stripped = block.strip("\n")
+    #print(stripped[:3])
+    #print(stripped.startswith("```") and stripped.startswith("```", len(stripped)-3))
+    return stripped.startswith("```") and stripped.startswith("```", len(stripped)-3)
 
 def block_startswith(block, start):
     lines = block.splitlines()
@@ -101,7 +104,10 @@ def header_to_html_nodes(header_block):
     return ParentNode(f"h{header_num}", leaves)
 
 def code_block_to_html_nodes(code_block):
-    stripped = code_block[3:-3]
+    start = code_block.find("```\n") + 4
+    end = code_block.rfind("```")
+    stripped = code_block[start:end]
+    #print(stripped)
     return ParentNode("pre", [LeafNode("code", stripped)])
 
 def quote_block_to_html_nodes(quote_block):
@@ -129,7 +135,8 @@ def ordered_list_to_html_nodes(ordered_list):
     return ParentNode("ol", elements)
 
 def paragraph_to_html_nodes(paragraph):
-    return ParentNode("p", text_lines_to_html_nodes([paragraph]))
+    merged = paragraph.replace("\n", " ")
+    return ParentNode("p", text_lines_to_html_nodes([merged]))
 
 block_map = {BlockType.HEADING:        header_to_html_nodes,
              BlockType.CODE:           code_block_to_html_nodes,
@@ -140,7 +147,10 @@ block_map = {BlockType.HEADING:        header_to_html_nodes,
 
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
+    #if block_to_block_type(blocks[0]) == BlockType.PARAGRAPH:
+    #    print(blocks)
     leaves = []
     for block in blocks:
+        #print(block_to_block_type(block))
         leaves.append(block_map[block_to_block_type(block)](block))
     return ParentNode("div", leaves)
