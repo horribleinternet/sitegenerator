@@ -1,4 +1,4 @@
-from textnode import TextType, TextNode
+from textnode import TextType, TextNode, BlockType
 import re
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
@@ -86,3 +86,72 @@ def markdown_to_blocks(markdown):
         if not block.isspace() and not block == "":
             clean_blocks.append(block)
     return clean_blocks
+
+def get_leading_hashes(lines):
+    count = -1
+    for line in lines:
+        current_count = 0
+        while line.startswith("#", current_count):
+            current_count += 1
+        if current_count == 0 or current_count > 6:
+            return 0
+        if not line.startswith(" ", current_count):
+            return 0
+        if count != -1 and count != current_count:
+            return 0
+        else:
+            count = current_count
+    return count
+
+def is_heading(block):
+    lines = block.splitlines()
+    return get_leading_hashes(lines) > 0
+
+def is_code_block(block):
+    stripped = block.strip("\n")
+    #print(stripped[:3])
+    #print(stripped.startswith("```") and stripped.startswith("```", len(stripped)-3))
+    return stripped.startswith("```") and stripped.startswith("```", len(stripped)-3)
+
+def block_startswith(block, start):
+    lines = block.splitlines()
+    for line in lines:
+        if not line.startswith(start):
+            return False
+    return True
+
+def is_quote(block):
+    return block_startswith(block, ">")
+
+def is_unordered_list(block):
+    return block_startswith(block, "- ")
+
+def is_ordered_list(block):
+    lineno = 1
+    lines = block.splitlines()
+    for line in lines:
+        if not line.startswith(f"{lineno}- "):
+            return False
+        lineno += 1
+    return True
+
+def block_to_block_type(block):
+    if is_heading(block):
+        return BlockType.HEADING
+    elif is_code_block(block):
+        return BlockType.CODE
+    elif is_quote(block):
+        return BlockType.QUOTE
+    elif is_unordered_list(block):
+        return BlockType.UNORDERED_LIST
+    elif is_ordered_list(block):
+        return BlockType.ORDERED_LIST
+    else:
+        return BlockType.PARAGRAPH
+
+def extract_title(markdown):
+    lines = markdown.splitlines()
+    for line in lines:
+        if get_leading_hashes(line) == 1:
+            return line[2:]
+    raise Exception("extract_title: markdown has no title")

@@ -1,7 +1,7 @@
 from textnode import TextType, BlockType
 from leafnode import LeafNode
 from parentnode import ParentNode
-from markdown import text_to_textnodes, markdown_to_blocks
+from markdown import text_to_textnodes, markdown_to_blocks, get_leading_hashes, block_to_block_type
 
 def text_node_to_html_node(text_node):
     match text_node.text_type:
@@ -31,68 +31,6 @@ def text_lines_to_html_nodes(lines):
     for line in lines:
         nodes.extend(text_to_textnodes(line))
     return text_nodes_to_html_nodes(nodes)
-
-def get_leading_hashes(lines):
-    count = -1
-    for line in lines:
-        current_count = 0
-        while line.startswith("#", current_count):
-            current_count += 1
-        if current_count == 0 or current_count > 6:
-            return 0
-        if not line.startswith(" ", current_count):
-            return 0
-        if count != -1 and count != current_count:
-            return 0
-        else:
-            count = current_count
-    return count
-
-def is_heading(block):
-    lines = block.splitlines()
-    return get_leading_hashes(lines) > 0
-
-def is_code_block(block):
-    stripped = block.strip("\n")
-    #print(stripped[:3])
-    #print(stripped.startswith("```") and stripped.startswith("```", len(stripped)-3))
-    return stripped.startswith("```") and stripped.startswith("```", len(stripped)-3)
-
-def block_startswith(block, start):
-    lines = block.splitlines()
-    for line in lines:
-        if not line.startswith(start):
-            return False
-    return True
-
-def is_quote(block):
-    return block_startswith(block, ">")
-
-def is_unordered_list(block):
-    return block_startswith(block, "- ")
-
-def is_ordered_list(block):
-    lineno = 1
-    lines = block.splitlines()
-    for line in lines:
-        if not line.startswith(f"{lineno}- "):
-            return False
-        lineno += 1
-    return True
-
-def block_to_block_type(block):
-    if is_heading(block):
-        return BlockType.HEADING
-    elif is_code_block(block):
-        return BlockType.CODE
-    elif is_quote(block):
-        return BlockType.QUOTE
-    elif is_unordered_list(block):
-        return BlockType.UNORDERED_LIST
-    elif is_ordered_list(block):
-        return BlockType.ORDERED_LIST
-    else:
-        return BlockType.PARAGRAPH
 
 def header_to_html_nodes(header_block):
     lines = header_block.splitlines()
