@@ -152,6 +152,7 @@ def block_to_block_type(block):
 def extract_title(markdown):
     lines = markdown.splitlines()
     for line in lines:
-        if get_leading_hashes(line) == 1:
+        #print(line)
+        if get_leading_hashes([line]) == 1:
             return line[2:]
     raise Exception("extract_title: markdown has no title")

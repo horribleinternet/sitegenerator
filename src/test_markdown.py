@@ -1,7 +1,7 @@
 import unittest
 
 from textnode import TextType, TextNode, BlockType
-from markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks, block_to_block_type, get_leading_hashes, is_heading, is_code_block, is_quote, is_ordered_list, is_unordered_list
+from markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, markdown_to_blocks, block_to_block_type, get_leading_hashes, is_heading, is_code_block, is_quote, is_ordered_list, is_unordered_list, extract_title
 
 class TestParentNode(unittest.TestCase):
 
@@ -297,3 +297,24 @@ This is the same paragraph on a new line
         self.assertNotEqual(block_to_block_type(code_block), BlockType.PARAGRAPH)
         heading = "#### what\n#### why\n"
         self.assertNotEqual(block_to_block_type(heading), BlockType.PARAGRAPH)
+
+    def test(self):
+        md = """
+
+# Title Title Titled
+
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+
+- This is a list
+- with items
+
+This is **bolded** paragraph
+
+This is another paragraph with _italic_ text and `code` here
+This is the same paragraph on a new line
+"""
+        title = extract_title(md)
+        self.assertEqual(title, "Title Title Titled")
