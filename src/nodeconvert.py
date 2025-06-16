@@ -96,10 +96,13 @@ def block_to_block_type(block):
 
 def header_to_html_nodes(header_block):
     lines = header_block.splitlines()
+    #print(lines)
     header_num = get_leading_hashes(lines)
+    #print(header_num)
+    #print(lines[0][header_num+1:])
     if header_num == 0 or header_num > 6:
         raise ValueError("invalid header block passed to header_to_html_nodes()")
-    stripped = list(map(lambda x: x[header_num+1:], header_block))
+    stripped = list(map(lambda x: x[header_num+1:], lines))
     leaves = text_lines_to_html_nodes(stripped)
     return ParentNode(f"h{header_num}", leaves)
 
@@ -112,8 +115,12 @@ def code_block_to_html_nodes(code_block):
 
 def quote_block_to_html_nodes(quote_block):
     lines = quote_block.splitlines()
+    #print(lines)
     stripped = list(map(lambda x: x[1:], lines))
-    leaves = text_lines_to_html_nodes(stripped)
+    #print(stripped)
+    quote = " ".join(stripped)
+    #print(quote)
+    leaves = text_lines_to_html_nodes([quote])
     return ParentNode("blockquote", leaves)
 
 def unordered_list_to_html_nodes(unordered_list):
@@ -127,7 +134,8 @@ def unordered_list_to_html_nodes(unordered_list):
 
 def ordered_list_to_html_nodes(ordered_list):
     lines = ordered_list.splitlines()
-    stripped = list(map(lambda x: x.split("- ", 1)[0], lines))
+    stripped = list(map(lambda x: x.split("- ", 2)[1], lines))
+    #print(stripped)
     elements = []
     for line in stripped:
         nodes = text_lines_to_html_nodes([line])
@@ -147,8 +155,8 @@ block_map = {BlockType.HEADING:        header_to_html_nodes,
 
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
-    #if block_to_block_type(blocks[0]) == BlockType.PARAGRAPH:
-    #    print(blocks)
+#    if block_to_block_type(blocks[0]) == BlockType.HEADING:
+#        print(blocks)
     leaves = []
     for block in blocks:
         #print(block_to_block_type(block))
