@@ -9,7 +9,7 @@ def main():
     #print(node)
     wipe_dir("public")
     copy_dir("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 def copy_dir(src, to):
     if not os.path.exists(src):
@@ -54,5 +54,17 @@ def generate_page(from_path, template_path, dest_path):
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with io.open(dest_path, mode="w") as output_file:
         output_file.write(output_text)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    entrys = os.listdir(dir_path_content)
+    #print(entrys)
+    for entry in entrys:
+        full_content_path = os.path.join(dir_path_content, entry)
+        if os.path.isdir(full_content_path):
+            generate_pages_recursive(full_content_path, template_path, os.path.join(dest_dir_path, entry))
+        elif os.path.isfile(full_content_path):
+            split_type = entry.rsplit(".", 1)
+            if split_type[1] == "md":
+                generate_page(os.path.join(full_content_path), template_path, os.path.join(dest_dir_path, split_type[0]+".html"))
 
 main()
