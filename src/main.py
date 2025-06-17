@@ -1,3 +1,4 @@
+import sys
 import os
 import io
 import shutil
@@ -7,9 +8,16 @@ import nodeconvert
 def main():
     #node = textnode.TextNode("This is some anchor text", textnode.TextType.LINK, "https://www.boot.dev")
     #print(node)
-    wipe_dir("public")
-    copy_dir("static", "public")
-    generate_pages_recursive("content", "template.html", "public")
+    basepath = None
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+    
+    if basepath == "" or basepath == None:
+        basepath = "/"
+    
+    wipe_dir("docs")
+    copy_dir("static", "docs")
+    generate_pages_recursive(basepath, "content", "template.html", "docs")
 
 def copy_dir(src, to):
     if not os.path.exists(src):
@@ -38,7 +46,7 @@ def wipe_dir(path):
             raise Exception(f"wipe_dir: path {path} is not a regular file or directory")
     os.mkdir(path)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(basepath, from_path, template_path, dest_path):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     title = ""
     htmlnode = None
@@ -51,20 +59,23 @@ def generate_page(from_path, template_path, dest_path):
         output_text = template_file.read()
     output_text = output_text.replace(r"{{ Title }}", title, 1)
     output_text = output_text.replace(r"{{ Content }}", htmlnode.to_html())
+    #print(f'href={basepath}')
+    output_text = output_text.replace('href="/', f'href="{basepath}')
+    output_text = output_text.replace('src="/', f'src="{basepath}')
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with io.open(dest_path, mode="w") as output_file:
         output_file.write(output_text)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(basepath, dir_path_content, template_path, dest_dir_path):
     entrys = os.listdir(dir_path_content)
     #print(entrys)
     for entry in entrys:
         full_content_path = os.path.join(dir_path_content, entry)
         if os.path.isdir(full_content_path):
-            generate_pages_recursive(full_content_path, template_path, os.path.join(dest_dir_path, entry))
+            generate_pages_recursive(basepath, full_content_path, template_path, os.path.join(dest_dir_path, entry))
         elif os.path.isfile(full_content_path):
             split_type = entry.rsplit(".", 1)
             if split_type[1] == "md":
-                generate_page(os.path.join(full_content_path), template_path, os.path.join(dest_dir_path, split_type[0]+".html"))
+                generate_page(basepath, os.path.join(full_content_path), template_path, os.path.join(dest_dir_path, split_type[0]+".html"))
 
 main()
