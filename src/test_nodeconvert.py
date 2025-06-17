@@ -80,12 +80,12 @@ the **same** even with inline stuff
     def test_ordered_list_block(self):
         md = """
 
-1- This is text that _should_ remain
-2- the **same** even with inline stuff
-3- This is text that _should_ remain
-4- the **same** even with inline stuff
-5- This is text that _should_ remain
-6- the **same** even with inline stuff
+1. This is text that _should_ remain
+2. the **same** even with inline stuff
+3. This is text that _should_ remain
+4. the **same** even with inline stuff
+5. This is text that _should_ remain
+6. the **same** even with inline stuff
 
 """
         node = markdown_to_html_node(md)
