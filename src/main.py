@@ -1,12 +1,15 @@
-import textnode
 import os
+import io
 import shutil
+import markdown
+import nodeconvert
 
 def main():
     #node = textnode.TextNode("This is some anchor text", textnode.TextType.LINK, "https://www.boot.dev")
     #print(node)
     wipe_dir("public")
     copy_dir("static", "public")
+    generate_page("content/index.md", "template.html", "public/index.html")
 
 def copy_dir(src, to):
     if not os.path.exists(src):
@@ -34,5 +37,22 @@ def wipe_dir(path):
         else:
             raise Exception(f"wipe_dir: path {path} is not a regular file or directory")
     os.mkdir(path)
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    title = ""
+    htmlnode = None
+    with io.open(from_path) as markdown_file:
+        markdown_text = markdown_file.read()
+        title = markdown.extract_title(markdown_text)
+        htmlnode = nodeconvert.markdown_to_html_node(markdown_text)
+    output_text = ""
+    with io.open(template_path) as template_file:
+        output_text = template_file.read()
+    output_text = output_text.replace(r"{{ Title }}", title, 1)
+    output_text = output_text.replace(r"{{ Content }}", htmlnode.to_html())
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    with io.open(dest_path, mode="w") as output_file:
+        output_file.write(output_text)
 
 main()
