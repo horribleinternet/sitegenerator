@@ -16,7 +16,7 @@ def text_node_to_html_node(text_node):
         case TextType.LINK:
             return LeafNode("a", text_node.text, {"href":text_node.url})
         case TextType.IMAGE:
-            return LeafNode("img", None, {"src":text_node.url, "alt":text_node.text})
+            return LeafNode("img", text_node.text, {"src":text_node.url, "alt":text_node.text})
         case _:
             raise ValueError("invalide TextType")
 
@@ -53,11 +53,12 @@ def code_block_to_html_nodes(code_block):
 
 def quote_block_to_html_nodes(quote_block):
     lines = quote_block.splitlines()
-    #print(lines)
-    stripped = list(map(lambda x: x[1:], lines))
-    #print(stripped)
+    print(lines)
+    cleaned = list(map(lambda x: x[1:], lines))
+    print(cleaned)
+    stripped = list(map(lambda x: x.strip(), cleaned))
     quote = " ".join(stripped)
-    #print(quote)
+    print(quote)
     leaves = text_lines_to_html_nodes([quote])
     return ParentNode("blockquote", leaves)
 
@@ -72,7 +73,7 @@ def unordered_list_to_html_nodes(unordered_list):
 
 def ordered_list_to_html_nodes(ordered_list):
     lines = ordered_list.splitlines()
-    stripped = list(map(lambda x: x.split("- ", 2)[1], lines))
+    stripped = list(map(lambda x: x.split(". ", 2)[1], lines))
     #print(stripped)
     elements = []
     for line in stripped:
