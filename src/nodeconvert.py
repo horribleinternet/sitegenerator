@@ -53,12 +53,12 @@ def code_block_to_html_nodes(code_block):
 
 def quote_block_to_html_nodes(quote_block):
     lines = quote_block.splitlines()
-    print(lines)
+    #print(lines)
     cleaned = list(map(lambda x: x[1:], lines))
-    print(cleaned)
+    #print(cleaned)
     stripped = list(map(lambda x: x.strip(), cleaned))
     quote = " ".join(stripped)
-    print(quote)
+    #print(quote)
     leaves = text_lines_to_html_nodes([quote])
     return ParentNode("blockquote", leaves)
 
