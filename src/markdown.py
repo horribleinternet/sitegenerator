@@ -130,7 +130,7 @@ def is_ordered_list(block):
     lineno = 1
     lines = block.splitlines()
     for line in lines:
-        if not line.startswith(f"{lineno}- "):
+        if not line.startswith(f"{lineno}. "):
             return False
         lineno += 1
     return True
